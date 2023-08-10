@@ -1,5 +1,7 @@
 package com.sportradar.livescoreboard.entity;
 
+import com.sportradar.livescoreboard.util.MatchIdGenerator;
+
 /**
  * Licensed Material - Property of Sportradar
  * Building Library With Java
@@ -10,25 +12,27 @@ package com.sportradar.livescoreboard.entity;
  * @author Ujwala Vanve
  */
 
-public class MatchEntity {
+public class MatchEntity implements Comparable {
 
     private String matchId;
+    private Long internalId;
     private String homeTeam;
     private String awayTeam;
     private int homeTeamScore;
     private int awayTeamScore;
-    private static int counter = 1000;
 
     public MatchEntity(String homeTeam, String awayTeam) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
-        this.matchId = "FW2023"+ MatchEntity.counter++;
+        this.matchId = "FW2023"+ MatchIdGenerator.getUniqueMatchId();
+        this.internalId = MatchIdGenerator.getSequenceId();
     }
 
     public MatchEntity(String matchId, String homeTeam, String awayTeam) {
         this.matchId = matchId;
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
+        this.internalId = MatchIdGenerator.getSequenceId();
     }
 
     public String getHomeTeam() {
@@ -65,5 +69,30 @@ public class MatchEntity {
 
     public String getMatchId() {
         return matchId;
+    }
+
+    @Override
+    public int compareTo(Object matchEntity) {
+        MatchEntity matchEntityNext = (MatchEntity) matchEntity;
+        if(matchEntityNext == null) return 0;
+
+        if((this.awayTeamScore + this.homeTeamScore) < (matchEntityNext.awayTeamScore + matchEntityNext.homeTeamScore)){
+            return 1;
+        }else if((this.awayTeamScore + this.homeTeamScore) == (matchEntityNext.awayTeamScore + matchEntityNext.homeTeamScore)) {
+            return (this.internalId < matchEntityNext.internalId) ? 1 : -1;
+        }else {
+            return -1;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "MatchEntity{" +
+                "matchId='" + internalId + '\'' +
+                ", homeTeam='" + homeTeam + '\'' +
+                ", awayTeam='" + awayTeam + '\'' +
+                ", homeTeamScore=" + homeTeamScore +
+                ", awayTeamScore=" + awayTeamScore +
+                '}';
     }
 }

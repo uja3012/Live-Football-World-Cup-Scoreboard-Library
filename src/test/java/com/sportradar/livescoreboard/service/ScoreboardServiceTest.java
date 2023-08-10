@@ -2,7 +2,6 @@ package com.sportradar.livescoreboard.service;
 
 import com.sportradar.livescoreboard.entity.MatchEntity;
 import com.sportradar.livescoreboard.repository.MapRepository;
-import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,7 +20,7 @@ public class ScoreboardServiceTest {
     @CsvSource({"Mexico,Canada"})
     @DisplayName("Initialize match entity with default team score values")
     public void construct_match_entity_with_default_parameter_values(String homeTeam,String awayTeam){
-        matchEntity = new MatchEntity(homeTeam,awayTeam);
+        matchEntity = scoreboardService.startMatch(homeTeam,awayTeam);
         Assertions.assertEquals(0,matchEntity.getAwayTeamScore());
         Assertions.assertEquals(0,matchEntity.getHomeTeamScore());
         Assertions.assertNotNull(matchEntity.getMatchId());
@@ -35,7 +34,7 @@ public class ScoreboardServiceTest {
                 "Argentina, Australia"})
     @DisplayName("when match entity id is assigned by the user & saved in the map data structure")
     public void save_match_entity_with_user_generated_entityId(String homeTeam,String awayTeam){
-        matchEntity = new MatchEntity(homeTeam,awayTeam);
+        matchEntity = scoreboardService.startMatch(homeTeam,awayTeam);
         mapRepository.save(matchEntity);
     }
 
@@ -45,9 +44,8 @@ public class ScoreboardServiceTest {
                 "0,1"})
     @DisplayName("when duplicate or null values passed to start match")
     public void verification_of_duplicate_or_null_constructor_values(String homeTeam,String awayTeam){
-        construct_match_entity_with_default_parameter_values(homeTeam, awayTeam);
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            scoreboardService.startMatch(homeTeam, awayTeam);
+            matchEntity = scoreboardService.startMatch(homeTeam, awayTeam);
         });
     }
 
@@ -56,7 +54,6 @@ public class ScoreboardServiceTest {
             "Germany,"})
     @DisplayName("when illegal or null values passed to start match")
     public void verification_of_illegal_or_null_constructor_values(String homeTeam,String awayTeam){
-        construct_match_entity_with_default_parameter_values(homeTeam, awayTeam);
         Assertions.assertThrows(NullPointerException.class, () -> {
             scoreboardService.startMatch(homeTeam, awayTeam);
         });
@@ -65,18 +62,37 @@ public class ScoreboardServiceTest {
     @Test
     @DisplayName("Show scoreboard for live matches")
     public void show_scoreboard_for_live_matches(){
-        List<MatchEntity> matchList = mapRepository.getSummaryOfMatches();
+        setUp();
+        setUpForUpdate();
+        List<MatchEntity> matchList = scoreboardService.getSummaryOfMatches();
+
+        // verify sequence of the result
+        for (MatchEntity m :matchList ) {
+            System.out.println(m);
+        }
         Assertions.assertNotNull(matchList);
     }
 
     @ParameterizedTest
-    @CsvSource({"FW20231000"})
+    @CsvSource({"FW20231000",
+            "FW20231005"})
     @DisplayName("when match is finished remove from the scoreboard")
     public void when_match_finished_remove_from_scoreboard(String matchId){
-       MatchEntity deletedMatchEntity =  mapRepository.deleteByMatchId(matchId);
-       Assertions.assertTrue((deletedMatchEntity instanceof MatchEntity) || ( isNull(deletedMatchEntity) ));
+        setUp();
+        MatchEntity deletedMatchEntity =  scoreboardService.finishMatch(matchId);
+        Assertions.assertTrue((deletedMatchEntity instanceof MatchEntity) || ( isNull(deletedMatchEntity) ));
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            scoreboardService.finishMatch(null);
+       });
     }
 
+    @Test
+    @DisplayName("when null value is passed to finish match")
+    public void when_failed_match_finished_remove_from_scoreboard(){
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            scoreboardService.finishMatch(null);
+        });
+    }
 
     @ParameterizedTest
     @CsvSource({"FW20231001, 5, 10"})
@@ -98,12 +114,20 @@ public class ScoreboardServiceTest {
         });
     }
 
-    void setUp() {
+    private void setUp() {
         mapRepository.save( new MatchEntity("FW20231001","Mexico","Canada") );
         mapRepository.save( new MatchEntity("FW20231002","Spain","Brazil") );
         mapRepository.save( new MatchEntity("FW20231003","Germany","France") );
         mapRepository.save( new MatchEntity("FW20231004","Uruguay","Italy") );
         mapRepository.save( new MatchEntity("FW20231005","Argentina","Australia") );
+    }
+
+    private void setUpForUpdate(){
+        scoreboardService.updateMatchScore("FW20231001", 0, 5);
+        scoreboardService.updateMatchScore("FW20231002", 10, 2);
+        scoreboardService.updateMatchScore("FW20231003", 2, 2);
+        scoreboardService.updateMatchScore("FW20231004", 6, 6);
+        scoreboardService.updateMatchScore("FW20231005", 3, 1);
     }
 
 }

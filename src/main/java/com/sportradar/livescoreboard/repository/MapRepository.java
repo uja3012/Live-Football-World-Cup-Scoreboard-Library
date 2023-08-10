@@ -23,11 +23,12 @@ public class MapRepository {
     private static Map<String,MatchEntity> map = new HashMap<String,MatchEntity>();
 
     // Save match entity details to map data structure as key-matchId & value-MatchEntity
-    public void save(MatchEntity matchEntity) {
+    public MatchEntity save(MatchEntity matchEntity) {
         map.put(matchEntity.getMatchId(), matchEntity);
+        return matchEntity;
     }
 
-    public List getSummaryOfMatches() {
+    public List<MatchEntity> getSummaryOfMatches() {
         return new ArrayList<>(map.values());
     }
 
