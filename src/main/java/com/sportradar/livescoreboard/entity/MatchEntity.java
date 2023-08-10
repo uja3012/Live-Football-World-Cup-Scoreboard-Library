@@ -12,6 +12,7 @@ package com.sportradar.livescoreboard.entity;
 
 public class MatchEntity {
 
+    private String matchId;
     private String homeTeam;
     private String awayTeam;
     private int homeTeamScore;

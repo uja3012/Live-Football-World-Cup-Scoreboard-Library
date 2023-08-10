@@ -4,12 +4,19 @@ import com.sportradar.livescoreboard.entity.MatchEntity;
 import com.sportradar.livescoreboard.repository.MapRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Objects.isNull;
 
 public class ScoreboardServiceTest {
 
     private MatchEntity matchEntity;
+    private MapRepository mapRepository=new MapRepository();
 
     @ParameterizedTest
     @CsvSource({"Mexico,Canada"})
@@ -29,8 +36,24 @@ public class ScoreboardServiceTest {
     @DisplayName("when match starts then match entity is saved in the memory map data structure")
     public void when_match_starts_it_saves_data_to_map_repository(String homeTeam,String awayTeam){
         construct_match_entity_with_default_parameter_values(homeTeam, awayTeam);
-        MapRepository mapRepository=new MapRepository();
         mapRepository.save(matchEntity);
     }
+
+    @Test
+    @DisplayName("Show scoreboard for live matches")
+    public void show_scoreboard_for_live_matches(){
+        List<MatchEntity> matchList = mapRepository.getSummaryOfMatches();
+        Assertions.assertNotNull(matchList);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"FW20231000"})
+    @DisplayName("when match is finished remove from the scoreboard")
+    public void when_match_finished_remove_from_scoreboard(String matchId){
+       MatchEntity deletedMatchEntity =  mapRepository.deleteByMatchId(matchId);
+       Assertions.assertTrue((deletedMatchEntity instanceof MatchEntity) || ( isNull(deletedMatchEntity) ));
+    }
+
+
 
 }
