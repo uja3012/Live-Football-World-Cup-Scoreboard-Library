@@ -17,10 +17,12 @@ public class MatchEntity {
     private String awayTeam;
     private int homeTeamScore;
     private int awayTeamScore;
+    private static int counter = 1000;
 
     public MatchEntity(String homeTeam, String awayTeam) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
+        this.matchId = "FW2023"+ MatchEntity.counter++;
     }
 
     public MatchEntity(String matchId, String homeTeam, String awayTeam) {
