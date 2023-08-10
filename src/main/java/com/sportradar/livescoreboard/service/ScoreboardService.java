@@ -16,7 +16,7 @@ import static java.util.Objects.isNull;
  * @author Ujwala Vanve
  */
 
-public class ScoreboardService {
+public class ScoreboardService implements ScoreboardServiceInterface{
 
     private MapRepository mapRepository = null;
 
@@ -24,6 +24,7 @@ public class ScoreboardService {
         mapRepository = repository;
     }
 
+    @Override
     public MatchEntity startMatch(String homeTeam, String awayTeam) {
         if (isNull(homeTeam) || isNull(awayTeam)) {
             throw new NullPointerException("Null arguments passed in start match");
@@ -45,11 +46,12 @@ public class ScoreboardService {
         }
     }
 
+    @Override
     public MatchEntity finishMatch(String matchId){
         if (isNull(matchId)) {
             throw new NullPointerException("Null arguments passed");
         }
-        return mapRepository.deleteByMatchId(matchId);
+        return mapRepository.deleteById(matchId);
     }
 
     public List<MatchEntity> getSummaryOfMatches() {

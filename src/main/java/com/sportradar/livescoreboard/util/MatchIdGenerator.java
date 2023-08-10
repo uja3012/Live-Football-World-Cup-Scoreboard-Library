@@ -3,7 +3,7 @@ package com.sportradar.livescoreboard.util;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MatchIdGenerator {
+public class MatchIdGenerator implements IdGenerator {
 
     private static int sequence=0;
 

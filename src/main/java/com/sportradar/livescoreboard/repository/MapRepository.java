@@ -2,6 +2,7 @@ package com.sportradar.livescoreboard.repository;
 
 import com.sportradar.livescoreboard.entity.MatchEntity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,11 +19,12 @@ import java.util.Map;
  * @author Ujwala Vanve
  */
 
-public class MapRepository {
+public class MapRepository implements CrudRepository<MatchEntity, String> {
 
     private static Map<String,MatchEntity> map = new HashMap<String,MatchEntity>();
 
     // Save match entity details to map data structure as key-matchId & value-MatchEntity
+    @Override
     public MatchEntity save(MatchEntity matchEntity) {
         map.put(matchEntity.getMatchId(), matchEntity);
         return matchEntity;
@@ -32,11 +34,14 @@ public class MapRepository {
         return new ArrayList<>(map.values());
     }
 
-    public MatchEntity deleteByMatchId(String matchId) {
+    @Override
+    public MatchEntity deleteById(String matchId) {
         return map.remove(matchId);
     }
 
+    @Override
     public MatchEntity findById(String matchId) {
         return map.get(matchId);
     }
+
 }
