@@ -55,5 +55,17 @@ public class ScoreboardServiceTest {
     }
 
 
+    @ParameterizedTest
+    @CsvSource({"FW20231000, 5, 10"})
+    @DisplayName("update match score with new values")
+    public void update_match_score_with_parameter_values(String matchId, int homeTeamScore,int awayTeamScore){
+        MatchEntity matchToUpdate = (MatchEntity) mapRepository.findById(matchId);
+        matchToUpdate.setHomeTeamScore(homeTeamScore);
+        matchToUpdate.setAwayTeamScore(awayTeamScore);
+
+        Assertions.assertEquals(5, matchToUpdate.getHomeTeamScore());
+        Assertions.assertEquals(10,matchToUpdate.getAwayTeamScore());
+
+    }
 
 }

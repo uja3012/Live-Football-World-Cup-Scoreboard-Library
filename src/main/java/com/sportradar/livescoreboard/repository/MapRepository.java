@@ -34,4 +34,8 @@ public class MapRepository {
     public MatchEntity deleteByMatchId(String matchId) {
         return map.remove(matchId);
     }
+
+    public MatchEntity findById(String matchId) {
+        return map.get(matchId);
+    }
 }
