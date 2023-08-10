@@ -1,5 +1,15 @@
 package com.sportradar.livescoreboard.entity;
 
+/**
+ * Licensed Material - Property of Sportradar
+ * Building Library With Java
+ * (c) Copyright @
+ * Defined match entity bean which holds match information
+ * Date : 10.08.2023
+ * Version : 1.0 (Initial Version)
+ * @author Ujwala Vanve
+ */
+
 public class MatchEntity {
 
     private String homeTeam;
@@ -42,5 +52,9 @@ public class MatchEntity {
 
     public void setAwayTeamScore(int awayTeamScore) {
         this.awayTeamScore = awayTeamScore;
+    }
+
+    public String getMatchId() {
+        return null;
     }
 }
