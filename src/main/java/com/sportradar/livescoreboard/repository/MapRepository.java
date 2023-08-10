@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class MapRepository {
 
-    private static Map<String,MatchEntity> map = new HashMap<>();
+    private static Map<String,MatchEntity> map = new HashMap<String,MatchEntity>();
 
     // Save match entity details to map data structure as key-matchId & value-MatchEntity
     public void save(MatchEntity matchEntity) {

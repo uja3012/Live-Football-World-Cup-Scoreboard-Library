@@ -23,6 +23,12 @@ public class MatchEntity {
         this.awayTeam = awayTeam;
     }
 
+    public MatchEntity(String matchId, String homeTeam, String awayTeam) {
+        this.matchId = matchId;
+        this.homeTeam = homeTeam;
+        this.awayTeam = awayTeam;
+    }
+
     public String getHomeTeam() {
         return homeTeam;
     }
@@ -56,6 +62,6 @@ public class MatchEntity {
     }
 
     public String getMatchId() {
-        return null;
+        return matchId;
     }
 }
