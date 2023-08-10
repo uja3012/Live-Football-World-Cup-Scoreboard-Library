@@ -2,12 +2,19 @@ package com.sportradar.livescoreboard.service;
 
 import com.sportradar.livescoreboard.entity.MatchEntity;
 import com.sportradar.livescoreboard.repository.MapRepository;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import static java.util.Objects.isNull;
+
+/**
+ * Licensed Material - Property of Sportradar
+ * Building Library With Java
+ * (c) Copyright @
+ * ScoreboardService to access all the necessary functions from MatchEntity and MapRepository
+ * Date : 10.08.2023
+ * Version : 1.0 (Initial Version)
+ * @author Ujwala Vanve
+ */
 
 public class ScoreboardService {
 
