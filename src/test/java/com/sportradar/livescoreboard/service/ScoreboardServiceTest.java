@@ -35,7 +35,7 @@ public class ScoreboardServiceTest {
     @DisplayName("when match entity id is assigned by the user & saved in the map data structure")
     public void save_match_entity_with_user_generated_entityId(String homeTeam,String awayTeam){
         matchEntity = scoreboardService.startMatch(homeTeam,awayTeam);
-        mapRepository.save(matchEntity);
+        Assertions.assertNotNull(matchEntity.getMatchId());
     }
 
     @ParameterizedTest

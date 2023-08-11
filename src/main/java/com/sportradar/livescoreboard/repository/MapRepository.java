@@ -1,6 +1,8 @@
 package com.sportradar.livescoreboard.repository;
 
 import com.sportradar.livescoreboard.entity.MatchEntity;
+import com.sportradar.livescoreboard.logging.ScoreboardLogger;
+import com.sportradar.livescoreboard.service.ScoreboardService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,11 +24,13 @@ import java.util.Map;
 public class MapRepository implements CrudRepository<MatchEntity, String> {
 
     private static Map<String,MatchEntity> map = new HashMap<String,MatchEntity>();
+    private static final ScoreboardLogger logger = new ScoreboardLogger(ScoreboardService.class);
 
     // Save match entity details to map data structure as key-matchId & value-MatchEntity
     @Override
     public MatchEntity save(MatchEntity matchEntity) {
         map.put(matchEntity.getMatchId(), matchEntity);
+        logger.info("Match is started between : "+matchEntity.getHomeTeam()+"-0 Vs "+matchEntity.getAwayTeam()+"-0 with Id :"+matchEntity.getMatchId() );
         return matchEntity;
     }
 
@@ -36,6 +40,7 @@ public class MapRepository implements CrudRepository<MatchEntity, String> {
 
     @Override
     public MatchEntity deleteById(String matchId) {
+        logger.info("Match is removed with id as :"+ matchId );
         return map.remove(matchId);
     }
 

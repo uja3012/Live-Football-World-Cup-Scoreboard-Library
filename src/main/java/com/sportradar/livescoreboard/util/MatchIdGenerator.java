@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 public class MatchIdGenerator implements IdGenerator {
 
     private static int sequence=0;
+    private static final MatchIdGenerator matchIdGenerator = new MatchIdGenerator();
 
     public long generateSequenceId() {
         String uniqueId=LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
@@ -14,12 +15,10 @@ public class MatchIdGenerator implements IdGenerator {
     }
 
     public static String getUniqueMatchId(){
-        final MatchIdGenerator matchIdGenerator = new MatchIdGenerator();
         return "SR_"+(matchIdGenerator.generateSequenceId());
     }
 
     public static Long getSequenceId(){
-        final MatchIdGenerator matchIdGenerator = new MatchIdGenerator();
         return (matchIdGenerator.generateSequenceId());
     }
 
