@@ -3,8 +3,11 @@ package com.sportradar.livescoreboard.service;
 import com.sportradar.livescoreboard.entity.MatchEntity;
 import com.sportradar.livescoreboard.logging.ScoreboardLogger;
 import com.sportradar.livescoreboard.repository.MapRepository;
-import java.util.Collections;
+import com.sportradar.livescoreboard.util.MatchIdGenerator;
+
+import java.time.LocalDate;
 import java.util.List;
+
 import static java.util.Objects.isNull;
 
 /**
@@ -19,51 +22,65 @@ import static java.util.Objects.isNull;
 
 public class ScoreboardService implements ScoreboardServiceInterface{
 
-    private MapRepository mapRepository = null;
+    private final MapRepository repository;
     private static final ScoreboardLogger logger = new ScoreboardLogger(ScoreboardService.class);
 
     public ScoreboardService(MapRepository repository) {
-        mapRepository = repository;
+        this.repository = repository;
     }
 
     @Override
     public MatchEntity startMatch(String homeTeam, String awayTeam) {
+        return startMatch(String.format("FW_%d_%s", LocalDate.now().getYear(), MatchIdGenerator.getInstance().getUniqueMatchId()), homeTeam, awayTeam);
+    }
+
+    @Override
+    public MatchEntity startMatch(String matchId, String homeTeam, String awayTeam) {
         if (isNull(homeTeam) || isNull(awayTeam)) {
             logger.error("Illegal argument passed, null values passed");
             throw new NullPointerException("Null arguments passed in start match");
         }
-        if (homeTeam.isEmpty() || awayTeam.isEmpty() || homeTeam.equalsIgnoreCase(awayTeam) || homeTeam.matches("-?\\d+(.\\d+)?") || awayTeam.matches("-?\\d+(.\\d+)?")) {
+        if (homeTeam.isEmpty() || awayTeam.isEmpty()
+                || homeTeam.equalsIgnoreCase(awayTeam) || homeTeam.matches("-?\\d+(.\\d+)?")
+                || awayTeam.matches("-?\\d+(.\\d+)?")) {
             logger.error("Illegal argument passed. Duplicate key found.");
             throw new IllegalArgumentException("Illegal argument passed. Duplicate key found.");
         }
-        return mapRepository.save(new MatchEntity(homeTeam, awayTeam));
+
+        MatchEntity matchEntity= repository.saveOrUpdate(new MatchEntity(matchId, homeTeam, awayTeam));
+        matchEntity.setStatus(MatchEntity.Status.IN_PROGRESS);
+        logger.info("Match is started between : "+matchEntity.getHomeTeam()+"-0 Vs "+matchEntity.getAwayTeam()+"-0 with Id :"+matchEntity.getMatchId() );
+
+        return matchEntity;
     }
 
     public MatchEntity updateMatchScore(String matchId, int homeTeamScore, int awayTeamScore){
-        try{
-            MatchEntity matchToUpdate = mapRepository.findById(matchId);
-            matchToUpdate.setHomeTeamScore(homeTeamScore);
-            matchToUpdate.setAwayTeamScore(awayTeamScore);
-            return matchToUpdate;
-        }catch (NullPointerException nullPointerException){
-            logger.error("NullPointerException : "+ nullPointerException);
-            throw new NullPointerException("No match found with "+ matchId);
-        }
+        var matchToUpdate = repository.findById(matchId).orElseThrow(() -> {
+            logger.info("No such match found with Id:"+matchId);
+            throw new IllegalArgumentException("No such match found with Id:"+matchId);
+        });
+        matchToUpdate.setHomeTeamScore(homeTeamScore);
+        matchToUpdate.setAwayTeamScore(awayTeamScore);
+        return repository.saveOrUpdate(matchToUpdate);
     }
 
     @Override
     public MatchEntity finishMatch(String matchId){
-        if (isNull(matchId)) {
-            logger.error("Null arguments passed");
-            throw new NullPointerException("Null arguments passed");
-        }
-        return mapRepository.deleteById(matchId);
+        var matchToUpdate = repository.findById(matchId).orElseThrow(() -> {
+            logger.info("No such match found with Id:"+matchId);
+            throw new IllegalArgumentException("No such match found with Id:"+matchId);
+        });
+
+        matchToUpdate.setStatus(MatchEntity.Status.FINISHED);
+        return repository.saveOrUpdate(matchToUpdate);
     }
 
     public List<MatchEntity> getSummaryOfMatches() {
         //Sorting of matches as per total score
-        List<MatchEntity> matchList = mapRepository.getSummaryOfMatches();
-        Collections.sort(matchList);
-        return matchList;
+        return repository.getSummaryOfMatches()
+                .stream()
+                .filter(matchEntity -> matchEntity.getStatus() == MatchEntity.Status.IN_PROGRESS)
+                .sorted()
+                .toList();
     }
 }

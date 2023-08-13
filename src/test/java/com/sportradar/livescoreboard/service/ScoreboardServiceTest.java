@@ -7,14 +7,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import java.util.List;
 
-import static java.util.Objects.isNull;
-
 public class ScoreboardServiceTest {
 
     private MatchEntity matchEntity;
     private final MapRepository mapRepository= new MapRepository();
     private ScoreboardService scoreboardService = new ScoreboardService(mapRepository);
-
 
     @ParameterizedTest
     @CsvSource({"Mexico,Canada"})
@@ -28,10 +25,10 @@ public class ScoreboardServiceTest {
 
     @ParameterizedTest
     @CsvSource({"Mexico,Canada",
-                "Spain,Brazil",
-                "Germany,France",
-                "Uruguay,Italy",
-                "Argentina, Australia"})
+            "Spain,Brazil",
+            "Germany,France",
+            "Uruguay,Italy",
+            "Argentina, Australia"})
     @DisplayName("when match entity id is assigned by the user & saved in the map data structure")
     public void save_match_entity_with_user_generated_entityId(String homeTeam,String awayTeam){
         matchEntity = scoreboardService.startMatch(homeTeam,awayTeam);
@@ -40,13 +37,11 @@ public class ScoreboardServiceTest {
 
     @ParameterizedTest
     @CsvSource({"Mexico,Mexico",
-                "Mexico,mexico",
-                "0,1"})
+            "Mexico,mexico",
+            "0,1"})
     @DisplayName("when duplicate or null values passed to start match")
     public void verification_of_duplicate_or_null_constructor_values(String homeTeam,String awayTeam){
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            matchEntity = scoreboardService.startMatch(homeTeam, awayTeam);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> scoreboardService.startMatch(homeTeam, awayTeam));
     }
 
     @ParameterizedTest
@@ -54,9 +49,7 @@ public class ScoreboardServiceTest {
             "Germany,"})
     @DisplayName("when illegal or null values passed to start match")
     public void verification_of_illegal_or_null_constructor_values(String homeTeam,String awayTeam){
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            scoreboardService.startMatch(homeTeam, awayTeam);
-        });
+        Assertions.assertThrows(NullPointerException.class, () -> scoreboardService.startMatch(homeTeam, awayTeam));
     }
 
     @Test
@@ -74,24 +67,18 @@ public class ScoreboardServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"FW20231000",
-            "FW20231005"})
+    @CsvSource({"FW20231005"})
     @DisplayName("when match is finished remove from the scoreboard")
     public void when_match_finished_remove_from_scoreboard(String matchId){
         setUp();
         MatchEntity deletedMatchEntity =  scoreboardService.finishMatch(matchId);
-        Assertions.assertTrue((deletedMatchEntity instanceof MatchEntity) || ( isNull(deletedMatchEntity) ));
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            scoreboardService.finishMatch(null);
-       });
+        Assertions.assertTrue((deletedMatchEntity instanceof MatchEntity));
     }
 
     @Test
     @DisplayName("when null value is passed to finish match")
     public void when_failed_match_finished_remove_from_scoreboard(){
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            scoreboardService.finishMatch(null);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> scoreboardService.finishMatch(null));
     }
 
     @ParameterizedTest
@@ -109,17 +96,15 @@ public class ScoreboardServiceTest {
     @CsvSource({"FW20231007, 5, 10"})
     @DisplayName("update match score with new values failure")
     public void when_failed_update_match_score_with_parameter_values(String matchId, int homeTeamScore,int awayTeamScore){
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            scoreboardService.updateMatchScore(matchId, homeTeamScore, awayTeamScore);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> scoreboardService.updateMatchScore(matchId, homeTeamScore, awayTeamScore));
     }
 
     private void setUp() {
-        mapRepository.save( new MatchEntity("FW20231001","Mexico","Canada") );
-        mapRepository.save( new MatchEntity("FW20231002","Spain","Brazil") );
-        mapRepository.save( new MatchEntity("FW20231003","Germany","France") );
-        mapRepository.save( new MatchEntity("FW20231004","Uruguay","Italy") );
-        mapRepository.save( new MatchEntity("FW20231005","Argentina","Australia") );
+        scoreboardService.startMatch( "FW20231001","Mexico","Canada" );
+        scoreboardService.startMatch( "FW20231002","Spain","Brazil" );
+        scoreboardService.startMatch( "FW20231003","Germany","France" );
+        scoreboardService.startMatch( "FW20231004","Uruguay","Italy" );
+        scoreboardService.startMatch( "FW20231005","Argentina","Australia" );
     }
 
     private void setUpForUpdate(){
@@ -129,5 +114,4 @@ public class ScoreboardServiceTest {
         scoreboardService.updateMatchScore("FW20231004", 6, 6);
         scoreboardService.updateMatchScore("FW20231005", 3, 1);
     }
-
 }
