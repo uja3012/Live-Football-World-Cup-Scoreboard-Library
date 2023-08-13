@@ -1,54 +1,43 @@
 package com.sportradar.livescoreboard.entity;
 
-import com.sportradar.livescoreboard.util.MatchIdGenerator;
+import java.util.Comparator;
+import java.util.StringJoiner;
 
 /**
- * Licensed Material - Property of Sportradar
- * Building Library With Java
- * (c) Copyright @
  * Defined match entity bean which holds match information
  * Date : 10.08.2023
- * Version : 1.0 (Initial Version)
+ * Version : 1.0
+ *
  * @author Ujwala Vanve
  */
 
-public class MatchEntity implements Comparable {
+public class MatchEntity implements Comparable<MatchEntity> {
 
-    private String matchId;
-    private Long internalId;
-    private String homeTeam;
-    private String awayTeam;
+    public enum Status{
+        NOT_STARTED,
+        IN_PROGRESS,
+        FINISHED
+    }
+
+    private final String matchId;
+    private final String homeTeam;
+    private final String awayTeam;
     private int homeTeamScore;
     private int awayTeamScore;
-
-    public MatchEntity(String homeTeam, String awayTeam) {
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.matchId = "FW2023"+ MatchIdGenerator.getUniqueMatchId();
-        this.internalId = MatchIdGenerator.getSequenceId();
-    }
+    private Status status = Status.NOT_STARTED;
 
     public MatchEntity(String matchId, String homeTeam, String awayTeam) {
         this.matchId = matchId;
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
-        this.internalId = MatchIdGenerator.getSequenceId();
     }
 
     public String getHomeTeam() {
         return homeTeam;
     }
 
-    public void setHomeTeam(String homeTeam) {
-        this.homeTeam = homeTeam;
-    }
-
     public String getAwayTeam() {
         return awayTeam;
-    }
-
-    public void setAwayTeam(String awayTeam) {
-        this.awayTeam = awayTeam;
     }
 
     public int getHomeTeamScore() {
@@ -57,6 +46,10 @@ public class MatchEntity implements Comparable {
 
     public void setHomeTeamScore(int homeTeamScore) {
         this.homeTeamScore = homeTeamScore;
+    }
+
+    private int getTotalScore(){
+        return homeTeamScore + awayTeamScore;
     }
 
     public int getAwayTeamScore() {
@@ -71,28 +64,27 @@ public class MatchEntity implements Comparable {
         return matchId;
     }
 
-    @Override
-    public int compareTo(Object matchEntity) {
-        MatchEntity matchEntityNext = (MatchEntity) matchEntity;
-        if(matchEntityNext == null) return 0;
+    public Status getStatus() {
+        return status;
+    }
 
-        if((this.awayTeamScore + this.homeTeamScore) < (matchEntityNext.awayTeamScore + matchEntityNext.homeTeamScore)){
-            return 1;
-        }else if((this.awayTeamScore + this.homeTeamScore) == (matchEntityNext.awayTeamScore + matchEntityNext.homeTeamScore)) {
-            return (this.internalId < matchEntityNext.internalId) ? 1 : -1;
-        }else {
-            return -1;
-        }
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    @Override
+    public int compareTo(MatchEntity that) {
+        return Comparator.nullsLast(Comparator.comparing(MatchEntity::getTotalScore).thenComparing(MatchEntity::getMatchId)).reversed().compare(this, that);
     }
 
     @Override
     public String toString() {
-        return "MatchEntity{" +
-                "matchId='" + internalId + '\'' +
-                ", homeTeam='" + homeTeam + '\'' +
-                ", awayTeam='" + awayTeam + '\'' +
-                ", homeTeamScore=" + homeTeamScore +
-                ", awayTeamScore=" + awayTeamScore +
-                '}';
+        return new StringJoiner(", ")
+                .add("matchId='" + matchId + "'")
+                .add("homeTeam='" + homeTeam + "'")
+                .add("awayTeam='" + awayTeam + "'")
+                .add("homeTeamScore='" + homeTeamScore + "'")
+                .add("awayTeamScore='" + awayTeamScore + "'").toString();
+
     }
 }

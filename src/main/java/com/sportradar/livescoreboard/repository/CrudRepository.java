@@ -1,13 +1,14 @@
 package com.sportradar.livescoreboard.repository;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 public interface CrudRepository<T, ID extends Serializable> {
 
-    T save(T entity);
+    T saveOrUpdate(T entity);
 
-    T findById(ID id);
+    Optional<T> findById(ID id);
 
-    T deleteById(ID id);
+    Optional<T> deleteById(ID id);
 }
 

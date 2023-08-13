@@ -1,25 +1,23 @@
 package com.sportradar.livescoreboard.util;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class MatchIdGenerator implements IdGenerator {
+public class MatchIdGenerator implements IdGenerator{
 
-    private static int sequence=0;
-    private static final MatchIdGenerator matchIdGenerator = new MatchIdGenerator();
+    private static final AtomicLong sequence= new AtomicLong();
+    private static final MatchIdGenerator INSTANCE = new MatchIdGenerator();
 
-    public long generateSequenceId() {
-        String uniqueId=LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
-        Long longUniqueId=Long.valueOf(uniqueId);
-        return ++sequence+longUniqueId;
+    // preventing default constructor
+    private MatchIdGenerator() {
     }
 
-    public static String getUniqueMatchId(){
-        return "SR_"+(matchIdGenerator.generateSequenceId());
+    public static MatchIdGenerator getInstance() {
+        return INSTANCE;
     }
 
-    public static Long getSequenceId(){
-        return (matchIdGenerator.generateSequenceId());
+    @Override
+    public String getUniqueMatchId(){
+        return  String.format("SR_%d", sequence.incrementAndGet());
     }
 
 }

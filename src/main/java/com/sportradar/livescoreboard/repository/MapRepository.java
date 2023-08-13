@@ -4,11 +4,11 @@ import com.sportradar.livescoreboard.entity.MatchEntity;
 import com.sportradar.livescoreboard.logging.ScoreboardLogger;
 import com.sportradar.livescoreboard.service.ScoreboardService;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -23,30 +23,29 @@ import java.util.Map;
 
 public class MapRepository implements CrudRepository<MatchEntity, String> {
 
-    private static Map<String,MatchEntity> map = new HashMap<String,MatchEntity>();
+    private static final Map<String,MatchEntity> tempStorage = new HashMap<>();
     private static final ScoreboardLogger logger = new ScoreboardLogger(ScoreboardService.class);
 
     // Save match entity details to map data structure as key-matchId & value-MatchEntity
     @Override
-    public MatchEntity save(MatchEntity matchEntity) {
-        map.put(matchEntity.getMatchId(), matchEntity);
-        logger.info("Match is started between : "+matchEntity.getHomeTeam()+"-0 Vs "+matchEntity.getAwayTeam()+"-0 with Id :"+matchEntity.getMatchId() );
+    public MatchEntity saveOrUpdate(MatchEntity matchEntity) {
+        tempStorage.put(matchEntity.getMatchId(), matchEntity);
         return matchEntity;
     }
 
     public List<MatchEntity> getSummaryOfMatches() {
-        return new ArrayList<>(map.values());
+        return new ArrayList<>(tempStorage.values());
     }
 
     @Override
-    public MatchEntity deleteById(String matchId) {
+    public Optional<MatchEntity> deleteById(String matchId) {
         logger.info("Match is removed with id as :"+ matchId );
-        return map.remove(matchId);
+        return Optional.ofNullable(tempStorage.remove(matchId));
     }
 
     @Override
-    public MatchEntity findById(String matchId) {
-        return map.get(matchId);
+    public Optional<MatchEntity> findById(String matchId) {
+        return Optional.ofNullable(tempStorage.get(matchId));
     }
 
 }
