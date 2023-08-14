@@ -43,8 +43,8 @@ public class ScoreboardService implements ScoreboardServiceInterface{
         if (homeTeam.isEmpty() || awayTeam.isEmpty()
                 || homeTeam.equalsIgnoreCase(awayTeam) || homeTeam.matches("-?\\d+(.\\d+)?")
                 || awayTeam.matches("-?\\d+(.\\d+)?")) {
-            logger.error("Illegal argument passed. Duplicate key found.");
-            throw new IllegalArgumentException("Illegal argument passed. Duplicate key found.");
+            logger.error("Illegal argument passed. Team names are not valid.");
+            throw new IllegalArgumentException("Illegal argument passed. Team names are not valid.");
         }
 
         MatchEntity matchEntity= repository.saveOrUpdate(new MatchEntity(matchId, homeTeam, awayTeam));

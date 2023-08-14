@@ -4,9 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Licensed Material - Property of Sportradar
- * Building Library With Java
- * (c) Copyright @
  * ScoreboardLogger to monitor the application activities
  * Date : 10.08.2023
  * Version : 1.0 (Initial Version)

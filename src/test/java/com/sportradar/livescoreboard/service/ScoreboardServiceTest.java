@@ -29,7 +29,7 @@ public class ScoreboardServiceTest {
             "Germany,France",
             "Uruguay,Italy",
             "Argentina, Australia"})
-    @DisplayName("when match entity id is assigned by the user & saved in the map data structure")
+    @DisplayName("When match entity id is assigned by the user & saved in the map data structure")
     public void save_match_entity_with_user_generated_entityId(String homeTeam,String awayTeam){
         matchEntity = scoreboardService.startMatch(homeTeam,awayTeam);
         Assertions.assertNotNull(matchEntity.getMatchId());
@@ -39,7 +39,7 @@ public class ScoreboardServiceTest {
     @CsvSource({"Mexico,Mexico",
             "Mexico,mexico",
             "0,1"})
-    @DisplayName("when duplicate or null values passed to start match")
+    @DisplayName("When duplicate or null values passed to start match")
     public void verification_of_duplicate_or_null_constructor_values(String homeTeam,String awayTeam){
         Assertions.assertThrows(IllegalArgumentException.class, () -> scoreboardService.startMatch(homeTeam, awayTeam));
     }
@@ -47,7 +47,7 @@ public class ScoreboardServiceTest {
     @ParameterizedTest
     @CsvSource({",Brazil",
             "Germany,"})
-    @DisplayName("when illegal or null values passed to start match")
+    @DisplayName("When illegal or null values passed to start match")
     public void verification_of_illegal_or_null_constructor_values(String homeTeam,String awayTeam){
         Assertions.assertThrows(NullPointerException.class, () -> scoreboardService.startMatch(homeTeam, awayTeam));
     }
@@ -68,7 +68,7 @@ public class ScoreboardServiceTest {
 
     @ParameterizedTest
     @CsvSource({"FW20231005"})
-    @DisplayName("when match is finished remove from the scoreboard")
+    @DisplayName("When match is finished remove from the scoreboard")
     public void when_match_finished_remove_from_scoreboard(String matchId){
         setUp();
         MatchEntity deletedMatchEntity =  scoreboardService.finishMatch(matchId);
@@ -76,14 +76,14 @@ public class ScoreboardServiceTest {
     }
 
     @Test
-    @DisplayName("when null value is passed to finish match")
+    @DisplayName("When null value is passed to finish match")
     public void when_failed_match_finished_remove_from_scoreboard(){
         Assertions.assertThrows(IllegalArgumentException.class, () -> scoreboardService.finishMatch(null));
     }
 
     @ParameterizedTest
     @CsvSource({"FW20231001, 5, 10"})
-    @DisplayName("update match score with new values success")
+    @DisplayName("Update match score with new values success")
     public void when_success_update_match_score_with_parameter_values(String matchId, int homeTeamScore,int awayTeamScore){
         setUp();
         MatchEntity updatedMatchEntity = scoreboardService.updateMatchScore(matchId, homeTeamScore, awayTeamScore);
@@ -94,7 +94,7 @@ public class ScoreboardServiceTest {
 
     @ParameterizedTest
     @CsvSource({"FW20231007, 5, 10"})
-    @DisplayName("update match score with new values failure")
+    @DisplayName("Update match score with new values failure")
     public void when_failed_update_match_score_with_parameter_values(String matchId, int homeTeamScore,int awayTeamScore){
         Assertions.assertThrows(IllegalArgumentException.class, () -> scoreboardService.updateMatchScore(matchId, homeTeamScore, awayTeamScore));
     }

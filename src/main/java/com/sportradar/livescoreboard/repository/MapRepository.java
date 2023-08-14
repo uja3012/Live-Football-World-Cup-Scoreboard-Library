@@ -12,9 +12,6 @@ import java.util.Optional;
 
 
 /**
- * Licensed Material - Property of Sportradar
- * Building Library With Java
- * (c) Copyright @
  * Used In-memory solution to store & update match details using map data structure
  * Date : 10.08.2023
  * Version : 1.0 (Initial Version)
