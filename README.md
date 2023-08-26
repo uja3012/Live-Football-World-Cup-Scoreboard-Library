@@ -39,4 +39,3 @@ The summary should be as follows:
   4. Argentina 3 - Australia 1
   5. Germany 2 - France 2
 
-
