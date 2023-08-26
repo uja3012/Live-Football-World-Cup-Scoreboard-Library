@@ -33,7 +33,7 @@
                 <configuration>
                     <!-- get all project dependencies -->
                     <descriptorRefs>
-                        <descriptorRef>-exec</descriptorRef>
+                        <descriptorRef>exe</descriptorRef>
                     </descriptorRefs>
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
